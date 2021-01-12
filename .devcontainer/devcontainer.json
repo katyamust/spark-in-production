@@ -1,0 +1,37 @@
+{
+	"name": "Spark Dev",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": {
+		}
+	},
+
+	// Set *default* container specific settings.json values on container create.
+	"settings": { 
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"ms-python.python",
+		"littlefoxteam.vscode-python-test-adapter",
+		"hbenl.vscode-test-explorer",
+		"kevinglasson.cornflakes-linter"
+	],
+
+	"containerEnv": {
+		"GRANT_SUDO": "yes"
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [
+		4041, 4042, 4043, 4044, 8888
+	],
+
+	"overrideCommand": false,
+
+	"containerUser": "root",
+	"postCreateCommand": "sudo ln -s `(realpath .devcontainer/spark-defaults.conf)` $SPARK_HOME/conf/spark-defaults.conf",
+
+	"remoteUser": "jovyan"
+}

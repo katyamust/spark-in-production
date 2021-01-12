@@ -1,0 +1,19 @@
+storage-account-name=mystorageacoount
+storage-account-key=<account-key>
+storage-container-name=data
+
+input-eh-connection-string=Endpoint=sb://myeventhub.servicebus.windows.net/;SharedAccessKeyName=Listen;SharedAccessKey=<key>;EntityPath=input;
+
+telemetry-instrumentation-key=<application insights instrumentation key, GUID format>
+
+master-data-path=master-data/master-data.csv
+
+output-path=delta/meter-data-8
+streaming-checkpoint-path=checkpoints/streaming-8
+
+max-events-per-trigger=100
+
+cosmos-db-endpoint=
+cosmos-db-masterkey=
+cosmos-db-database-name=
+cosmos-db-collection-name=
