@@ -2,9 +2,23 @@
 Data ingestion stream
 """
 
-# %% parse args/secrets
+# %%
+import json
 import configargparse
 
+from pyspark import SparkConf
+from pyspark.sql import SparkSession
+from pyspark.sql import DataFrame
+
+from pyspark.sql.types import StructType
+import pyspark.sql.functions as F
+
+from spark_utils.streaming_utils import EventHubParser
+from spark_utils.schemas import SchemaFactory
+from spark_utils.streaming_utils.denormalization import denormalize_parsed_data
+import spark_utils.batch_operations as batch_operations
+
+# %%
 p = configargparse.ArgParser(prog='streaming.py',
                              description='Streaming Job Sample',
                              default_config_files=['configuration/run_args_streaming.conf'],
@@ -36,8 +50,6 @@ if unknown_args:
     _ = [print(arg) for arg in unknown_args]
 
 # %% build spark context
-from pyspark import SparkConf
-from pyspark.sql import SparkSession
 
 spark_conf = SparkConf(loadDefaults=True) \
     .set('fs.azure.account.key.{0}.dfs.core.windows.net'.format(args.storage_account_name),
@@ -53,7 +65,6 @@ print("Spark Configuration:")
 _ = [print(k + '=' + v) for k, v in sc.getConf().getAll()]
 
 # %% Configure Event Hub reading
-import json
 
 input_eh_starting_position = {
     "offset": "-1",         # starting from beginning of stream
@@ -84,12 +95,7 @@ print("Input stream schema:")
 raw_data.printSchema()
 
 # %%
-from pyspark.sql.types import StructType
-
-from spark_utils.streaming_utils import EventHubParser
-from spark_utils.schemas import SchemaFactory, SchemaNames
-
-message_schema: StructType = SchemaFactory.get_instance(SchemaNames.MessageBody)
+message_schema: StructType = SchemaFactory.get_instance()
 
 # Event hub message parser function
 parsed_data = EventHubParser.parse(raw_data, message_schema)
@@ -98,20 +104,13 @@ print("Parsed stream schema:")
 parsed_data.printSchema()
 
 # %% Denormalize messages: Flatten and explode messages by each contained time series point
-from spark_utils.streaming_utils.denormalization import denormalize_parsed_data
 
 denormalized_data = denormalize_parsed_data(parsed_data)
 
 print("denormalized_data schema")
 denormalized_data.printSchema()
 
-# %%
-from pyspark.sql import DataFrame
-
-import pyspark.sql.functions as F
-
-import spark_utils.batch_operations as batch_operations
-
+# %% batch operations
 
 BASE_STORAGE_PATH = "abfss://{0}@{1}.dfs.core.windows.net/".format(
     args.storage_container_name, args.storage_account_name
