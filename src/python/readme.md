@@ -2,7 +2,7 @@
 
 `streaming_job.py` corresponds to the streaming code to be deployed to the Spark cluster. In a nutshell, it reads data from Azure Event Hubs, parses it, flattens nested structures and writes results to Azure Storage. Compared to Jupyter or DataBricks Notebooks plain python files utilize the full IDE support and functionality during development, interactive experimentation and tests.
 
-This sample if optimized for a local spark deployment inside the configured DevContainer. Together with the local spark, Visual Studio Code python extension provides exception development experience for production python plain files development as well as data experimentation. Note that this setup is not recommended for any actual big data processing (use sampled data during development), performance tests or tuning.
+This sample is optimized for a local spark deployment inside the configured DevContainer. Together with the local spark, Visual Studio Code python extension provides exception development experience for production python plain files development as well as data experimentation. Note that this setup is not recommended for any actual big data processing (use sampled data during development), performance tests or tuning.
 
 ## Streaming job code and spark_utils package
 
