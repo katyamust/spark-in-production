@@ -6,7 +6,7 @@ This sample is optimized for a local spark deployment inside the configured DevC
 
 ## Streaming job code and spark_utils package
 
-Main streaming job flow resides in `streaming_job.py` file. If needed, other job files like batch processing can be also added to the same folder. As the most of the actual spark code is extracted in spark_utils package, this design encourages modularization, reuse and unit testing. From local development perspective this package is perceived by tools as a normal module with refactoring and instant IntelliSense functionality out of the box. Simultaneously, the deployment process can build this code as single unit, deploy it to the cluster and then reuse it for every job in the folder.
+Main streaming job flow resides in `streaming_job.py` file. If needed, other job files like batch processing can be also added to the same folder. As most of the actual spark code is extracted in spark_utils package, this design encourages modularization, reuse and unit testing. From local development perspective this package is perceived by tools as a normal module with refactoring and instant IntelliSense functionality out of the box. Simultaneously, the deployment process can build this code as single unit, deploy it to the cluster and then reuse it for every job in the folder.
 
 For both use cases as a local module or a package its functionality can be imported with a standard python `from spark_utils import *`. Make sure to configure `__all__` variable in the module's `__init__.py` correctly.
 
