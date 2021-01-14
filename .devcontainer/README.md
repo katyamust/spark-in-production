@@ -1,14 +1,16 @@
 # DevContainer Configuration
 
-The Visual Studio Code Remote - Containers extension lets you use a Docker container as a full-featured development environment. It allows you to open any folder or repository inside a container and take advantage of Visual Studio Code's full feature set. A devcontainer.json file in your project tells VS Code how to access (or create) a development container with a well-defined tool and runtime stack. This container can be used to run an application or to sandbox tools, libraries, or runtimes needed for working with a codebase. GitHub Codespaces use this same concept to quickly create customized, cloud-based development environments accessible from VS Code or the web.
+[Visual Studio Code Remote - Containers extension](https://code.visualstudio.com/docs/remote/containers) lets you use a Docker container as a full-featured development environment. It allows you to open any folder or repository inside a container and take advantage of Visual Studio Code's full feature set. A devcontainer.json file in your project tells VS Code how to access (or create) a development container with a well-defined tool and runtime stack. This container can be used to run an application or to sandbox tools, libraries, or runtimes needed for working with a codebase. 
+
+Dev environment inside the container can be spun up also using [GitHub Codespaces](https://github.com/features/codespaces), which allows you to create cloud-based development environments accessible from VS Code or the web.
 
 As Apache Spark is not that easy to install and configure properly, DevContainers provides a simple to use alternative to setup Spark Standalone and the corresponding development tools in minutes.
 
-Check [documentation](https://code.visualstudio.com/docs/remote/create-dev-container) for a reference on available parameters and deployment options.
+Check the [documentation](https://code.visualstudio.com/docs/remote/create-dev-container) for a reference on available parameters and deployment options.
 
 ## Dockerfile
 
-Dockerfile is the main place to configure all required binary dependencies and installation scripts for a DevContainer.
+Dockerfile is the main place to configure all the required binary dependencies and installation scripts for a DevContainer.
 
 In the specific case of Spark development environment prebuilt containers from [Jupyter Stack](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-pyspark-notebook) project can be an optimal solutions: they contain the latest configured single-node spark engine as well as all required dev tools. Check [jupyter/pyspark-notebook](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-pyspark-notebook) for Spark with PySpark interface and [jupyter/all-spark-notebook](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-all-spark-notebook) for a Spark engine with additional Scala and R support.
 
