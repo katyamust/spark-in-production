@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from .event_hub_parser import EventHubParser
+from .streaming_preview import preview_stream
 
 
-__all__ = ["EventHubParser"]
+__all__ = ["EventHubParser", "preview_stream"]
