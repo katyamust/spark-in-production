@@ -29,7 +29,7 @@ jobs:
         if: ${{ steps.skip_check.outputs.should_skip == 'false' }}
         uses: TrueBrain/actions-flake8@master
         with:
-          path: ./src
+          path: ./src/python/src
           ignore: E501,F401,E402,W503
 
       - name: Unit tests

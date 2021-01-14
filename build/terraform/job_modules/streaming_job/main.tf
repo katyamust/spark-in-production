@@ -47,11 +47,7 @@ resource "databricks_job" "streaming_job" {
       "--max-events-per-trigger=100",
       "--trigger-interval=1 second",
       "--streaming-checkpoint-path=checkpoints/streaming",
-      "--telemetry-instrumentation-key=${var.appinsights_instrumentation_key}",
-      "--cosmos-db-endpoint=${var.cosmosdb-account-endpoint}",
-      "--cosmos-db-masterkey=${var.cosmosdb-account-primary-key}",
-      "--cosmos-db-database-name=${var.cosmosdb-database-name}",
-      "--cosmos-db-collection-name=${var.cosmosdb-collection-name}"
+      "--telemetry-instrumentation-key=${var.appinsights_instrumentation_key}"
     ]
   }
 

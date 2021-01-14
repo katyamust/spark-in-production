@@ -13,12 +13,6 @@ data "azurerm_key_vault_secret" "receiver-evhar-inboundqueue-connection-string" 
   key_vault_id = var.keyvault_id
 }
 
-
-data "azurerm_cosmosdb_account" "cosmosdb" {
-  name                = "postoffice-${var.environment}"
-  resource_group_name = var.resource_group_name
-}
-
 module "streaming_job" {
   source                                         = "../job_modules/streaming_job"
   databricks_id                                  = var.databricks_id
@@ -30,8 +24,4 @@ module "streaming_job" {
   appinsights_instrumentation_key                = data.azurerm_key_vault_secret.appinsights_instrumentation_key.value
   wheel_file                                     = var.wheel_file
   python_main_file                               = var.python_main_file
-  cosmosdb-account-endpoint                      = data.azurerm_cosmosdb_account.cosmosdb.endpoint
-  cosmosdb-account-primary-key                   = data.azurerm_cosmosdb_account.cosmosdb.primary_master_key
-  cosmosdb-database-name                         = "energinetDocsDB"
-  cosmosdb-collection-name                       = var.cosmos_coll
 }

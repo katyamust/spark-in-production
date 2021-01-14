@@ -1,5 +1,5 @@
 #!/bin/sh -l
 
-cd ./src/streaming
+cd ./src/python/src
 python setup.py install
 pytest tests

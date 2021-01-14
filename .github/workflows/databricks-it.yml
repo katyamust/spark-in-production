@@ -33,7 +33,7 @@ jobs:
     name: Run DataBricks integration test
     runs-on: ubuntu-latest
     env:
-      MAIN_PYTHON_FILE: "dbfs:/streaming/enrichment_and_validation.py"
+      MAIN_PYTHON_FILE: "dbfs:/streaming/streaming_job.py"
 
     steps:
     - name: Checkout code
@@ -130,7 +130,7 @@ jobs:
       
     - name: Copy Wheel File to DBFS
       run: |    
-        dbfs cp --overwrite -r ./src/python/src/dist/geh_stream-1.0-py3-none-any.whl "dbfs:/wheels"
+        dbfs cp --overwrite -r ./src/python/src/dist/geh_stream-1.0-py3-none-any.whl "dbfs:/wheels/geh_stream-1.0-py3-none-any.whl"
 
     - name: Copy Job Definition to DBFS
       id: copy_files_todbfs

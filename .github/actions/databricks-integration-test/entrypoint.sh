@@ -7,5 +7,5 @@ echo "THE USER IS: $(whoami)"
 cat $SPARK_HOME/conf/spark-defaults.conf
 echo "=================================="
 
-cd ./src/integration-test/
+cd ./src/python/src/integration-test/
 python streaming-test.py $1 $2 $3 $4 $5
