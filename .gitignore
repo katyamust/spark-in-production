@@ -369,3 +369,7 @@ src/geh_stream.egg-info/
 
 # Terraform
 .terraform
+project
+target
+.bloop
+.metals
