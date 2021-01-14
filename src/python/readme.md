@@ -2,11 +2,11 @@
 
 `streaming_job.py` corresponds to the streaming code to be deployed to the Spark cluster. In a nutshell, it reads data from Azure Event Hubs, parses it, flattens nested structures and writes results to Azure Storage. Compared to Jupyter or DataBricks Notebooks plain python files utilize the full IDE support and functionality during development, interactive experimentation and tests.
 
-This sample is optimized for a local spark deployment inside the configured DevContainer. Together with the local spark, Visual Studio Code python extension provides exception development experience for production python plain files development as well as data experimentation. Note that this setup is not recommended for any actual big data processing (use sampled data during development), performance tests or tuning.
+This sample is optimized for a local spark deployment inside the configured DevContainer. Together with the local spark, Visual Studio Code python extension provides exceptional development experience for production python plain files development as well as data experimentation. Note that this setup is actually not recommended for any big data processing (use sampled data during development), performance tests or tuning.
 
 ## Streaming job code and spark_utils package
 
-Main streaming job flow resides in `streaming_job.py` file. If needed, other job files like batch processing can be also added to the same folder. As most of the actual spark code is extracted in spark_utils package, this design encourages modularization, reuse and unit testing. From local development perspective this package is perceived by tools as a normal module with refactoring and instant IntelliSense functionality out of the box. Simultaneously, the deployment process can build this code as single unit, deploy it to the cluster and then reuse it for every job in the folder.
+Main streaming job flow resides in `streaming_job.py` file. If needed, other job files like batch processing can be also added to the same folder. As most of the actual spark code is extracted in spark_utils package, this design encourages modularization, reuse and unit testing. From local development perspective this package is perceived by tools as a normal module with refactoring and instant IntelliSense functionality provided out of the box. Simultaneously, the deployment process can build this code as a single unit, deploy it to the cluster and then reuse it for every job in the folder.
 
 For both use cases as a local module or a package its functionality can be imported with a standard python `from spark_utils import *`. Make sure to configure `__all__` variable in the module's `__init__.py` correctly.
 
