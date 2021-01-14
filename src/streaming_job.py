@@ -124,14 +124,15 @@ checkpoint_path = BASE_STORAGE_PATH + args.streaming_checkpoint_path
 
 def __store_data_frame(batch_df: DataFrame, _: int):
     try:
-        # Cache the batch in order to avoid the risk of recalculation in each write operation
+        # Cache the batch in order to avoid the risk 
+        # of recalculation in each write operation
         batch_df = batch_df.persist()
 
-        # Make valid time series points available to aggregations (by storing in Delta lake)
+        # Make valid time series points available to post processing
+        # (by storing in Delta lake)
         batch_operations.store_data(batch_df, output_delta_lake_path)
 
         # <other operations may go here>
-
         batch_df = batch_df.unpersist()
 
     except Exception as err:
