@@ -91,11 +91,15 @@ Besides a more convenient development approach with python scripts, modules and 
 
 First and foremost, full featured IntelliSense support is desirable as it significantly simplifies Spark API discovery. The same applies for other convenient development tools like refactoring and "go to definition". They are available out of the box for every `.py` and `.ipynb` file in the folder.
 
+![Spark IntelliSense](../../images/python-dx-intellisense.jpg)
+
 ### Debugging and local job execution
 
 This sample uses VSCode Remote - Containers to simplify the development environment set up. In the most of the cases it is as simple as clicking "Reopen in Container" in VSCode UI to get Spark and the corresponding development tools up and running. Check the corresponding [README](../.devcontainer/README.md) in the `.devcontainer` folder for more information.
 
 Once it's ready, the normal VSCode python debugging experience is available: open the job file to run or debug, set breakpoints, and run debug session in debug menu. All the familiar features like variable hovering, step in/over as well as external library debugging are available immediately.
+
+![Spark Debugging](../../images/python-dx-debugging.jpg)
 
 As the Spark engine is installed and configured in the container, debug session actually instantiates a worker process to run and debug the code allowing developers to access to the actual execution behavior. So that, make sure that the corresponding configuration with real values has been provided as well as all required maven packages have been listed in the `spark-defaults.conf` file.
 
@@ -105,13 +109,17 @@ If the whole debugging experience is not required, then the code can be run dire
 
 Data development is usually more convenient when there is a way to get immediate feedback on your assumptions about data structure, check filters and intermediate outputs. That's why Python/DataBricks Notebooks are so popular especially at the early stages of development. Thankfully, VSCode python extension provides a way to get the same level of interactivity while still keeping IntelliSense and debugging support.
 
-To start, open the `experiments.ipynb` file in the extension. It contains a simplified version of the `streaming_job.py`, but in the convenient notebook format. Internally it runs the same IKernel python kernel that is normally used with jupyter, but renders it inside the VSCode. This view provides a way to rerun the cells, make experiments and explore the data. Simultaneously, it supports most of the features of the plain text files, guaranteeing IntelliSense support, renaming as well as debugging: just click "run line by line" at the top of the cell to automatically attach to the corresponding IKernel process and initiate debugging.
+![Spark Jupyter Notebooks](../../images/python-dx-jupyter.jpg)
+
+To start, open the `data-generator.ipynb` file in the extension. It contains a simplified version of the `streaming_job.py`, but in the convenient notebook format. Internally it runs the same IKernel python kernel that is normally used with jupyter, but renders it inside the VSCode. This view provides a way to rerun the cells, make experiments and explore the data. Simultaneously, it supports some of the features of the plain text files, guaranteeing IntelliSense support, hovering as well as debugging: just click "run line by line" at the top of the cell to automatically attach to the corresponding IKernel process and initiate debugging.
 
 The only consideration is that Databricks has a convenient `display` function that is not available locally. To simulate its behavior, use dataframe's `.show()` action to display the preview or utilize console output (`df.writeStream.format('console').start()`) to output stream.
 
 ### Plain code experiments
 
 While notebooks format is convenient for experimentation, notebooks cannot be executed in the production environment. For that purpose VSCode Python extensions provides a special magic comment format (`# %%`) that splits plain code into cells, allowing to achieve the similar level of experimentation while writing production ready code. Check `streaming_job.py` file for "Run cell" and "Debug cell" commands above the `# %%` comments. The only difference with the notebooks from above is that cell output is displayed to the right in a dedicated preview window and is not retained between sessions.
+
+![Spark Plain IKernel](../../images/python-dx-plain-ikernel.jpg)
 
 As this format doesn't allow to pass run arguments (compared to debugging) `spark_defaults.conf` and `run_args` usage were purposefully designed to support the scenario of just-in-time check of the production-ready code during development.
 
