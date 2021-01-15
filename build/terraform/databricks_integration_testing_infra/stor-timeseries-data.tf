@@ -38,12 +38,3 @@ module "aggregation_container" {
   container_access_type = "private"
   dependencies = [ module.stor_timeseries_data.dependent_on ]
 }
-
-resource "azurerm_storage_blob" "master_data" {
-  count                  = var.env_count  
-  name                   = "master-data/master-data.csv"
-  storage_account_name   = module.stor_timeseries_data.name
-  storage_container_name = module.streaming_container[count.index].name
-  type                   = "Block"
-  source                 = "../../../samples/mock-data/master-data.csv"
-}
