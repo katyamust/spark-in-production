@@ -2,13 +2,13 @@
 
 `streaming_job.py` corresponds to the streaming code to be deployed to the Spark cluster. In a nutshell, it reads data from Azure Event Hubs, parses it, flattens nested structures and writes results to Azure Storage. Compared to Jupyter or Databricks Notebooks plain python files utilize the full IDE support and functionality during development, interactive experimentation and tests.
 
-This sample is optimized for a local spark deployment inside the configured DevContainer. Together with the local spark, Visual Studio Code python extension provides exceptional development experience for production python plain files development as well as data experimentation. Note that this setup is actually not recommended for any big data processing (use sampled data during development), performance tests or tuning.
+This sample is optimized for a local spark deployment inside the configured DevContainer. Together with the local spark, Visual Studio Code python extension provides exceptional development experience for production python plain files development as well as data experimentation. Note that this setup is actually not recommended for any big data processing (use sampled data during development), performance tests or tuning. For more information check [DevContainer configuration](../../.devcontainer/).
 
 ## Streaming job code and spark_utils package
 
-Main streaming job flow resides in `streaming_job.py` file. If needed, other job files like batch processing can be also added to the same folder. As most of the actual spark code is extracted in spark_utils package, this design encourages modularization, reuse and unit testing. From local development perspective this package is perceived by tools as a normal module with refactoring and instant IntelliSense functionality provided out of the box. Simultaneously, the deployment process can build this code as a single unit, deploy it to the cluster and then reuse it for every job in the folder.
+Main streaming job flow resides in [streaming_job.py](./streaming_job.py) file. If needed, other job files like batch processing can be also added to the same folder. As most of the actual spark code is extracted in [spark_utils](./spark_utils/) package, this design encourages modularization, reuse and unit testing. From local development perspective this package is perceived by tools as a normal module with refactoring and instant IntelliSense functionality provided out of the box. Simultaneously, the deployment process can build this code as a single unit, deploy it to the cluster and then reuse it for every job in the folder.
 
-For both use cases as a local module or a package its functionality can be imported with a standard python `from spark_utils import *`. Make sure to configure `__all__` variable in the module's `__init__.py` correctly.
+For both use cases as a local module or a package its functionality can be imported with a standard python `from spark_utils import *`. Make sure to configure `__all__` variable in the module's `__init__.py` [correctly](https://docs.python.org/3/tutorial/modules.html#packages).
 
 `streaming_job.py` itself is a basic script file controlling the execution flow with a few aspects to notice:
 
@@ -24,7 +24,7 @@ NOTE. To build the package during the CI/CD process execute:
 
 ### Configuration and secret management
 
-Python has an extensive configuration functionality that can be overwritten during Spark Submit. This sample utilized `configargparse` package as it allows to associate environment variables to parameters as well as pass configuration in files. Command line arguments and environment variables (mainly for secrets) proved to be an approach to configure the job during the deployment with `spark-submit` overrides. At the same time, file configurations are handy for local development, interactive experimentation and debugging. Below is the sample's `configargparse` definition. Mind `default_config_files` constructor parameter and environment variable name override for the storage account key.
+Python has an extensive configuration functionality that can be overwritten during Spark Submit. This sample utilized [configargparse](https://pypi.org/project/ConfigArgParse/) package as it allows to associate environment variables to parameters as well as pass configuration in files. Command line arguments and environment variables (mainly for secrets) proved to be an approach to configure the job during the deployment with `spark-submit` overrides. At the same time, file configurations are handy for local development, interactive experimentation and debugging. Below is the sample's `configargparse` definition. Mind `default_config_files` constructor parameter and environment variable name override for the storage account key.
 
 ```python
     p = configargparse.ArgParser(prog='streaming.py',
@@ -64,7 +64,7 @@ Compared to Databricks jobs, SparkSession and the corresponding `spark` variable
     sc = spark.sparkContext 
 ```
 
-SessionConf is another critical part to consider. Spark has a myriad of different configurations affecting every bit of behavior from performance to security. The full list can be found [here](http://spark.apache.org/docs/latest/configuration.html). In this solution two different approaches are utilized to provide an optimal experience. `spark-defaults.conf` is used and recommended to set default spark configuration to simulate DataBricks environment, manage maven packages and define common job configuration. On the top of it, `SparkSession` provides a way to specify job-specific overrides and pass secrets (see Azure Storage Account key above). For more information on `spark-defaults.conf` check the corresponding section of the DevContainer README.
+SessionConf is another critical part to consider. Spark has a myriad of different configurations affecting every bit of behavior from performance to security. The full list can be found [here](http://spark.apache.org/docs/latest/configuration.html). In this solution two different approaches are utilized to provide an optimal experience. [spark-defaults.conf](../../.devcontainer/spark-defaults.conf) is used and recommended to set default spark configuration to simulate DataBricks environment, manage maven packages and define common job configuration. On the top of it, `SparkSession` provides a way to specify job-specific overrides and pass secrets (see Azure Storage Account key above). For more information on `spark-defaults.conf` check the corresponding section of the [DevContainer README](../../.devcontainer/README.md#spark-configuration).
 
 What makes Databricks a perfect technology for production is its high optimization and fine-tuning of Spark configuration parameters. Sometimes it proves useful to replicate some of that parameters to the local dev environment. Execute the code below on the Databricks cluster to print all set configuration values and then replicate a few of them in `spark-defaults.conf` locally:
 
@@ -85,7 +85,7 @@ Another difference between Databricks Notebooks and python file jobs lies in the
 
 ## Development Experience
 
-Besides a more convenient development approach with python scripts, modules and tests, the local Spark environment together with an IDE like Visual Studio Code allows convenient and familiar development experiences.
+Besides a more convenient development approach with python scripts, modules and tests, the local Spark environment together with an IDE like Visual Studio Code's [Python Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) allows convenient and familiar development experiences.
 
 ### IntelliSense, Refactoring and other development tools
 
@@ -95,7 +95,7 @@ First and foremost, full featured IntelliSense support is desirable as it signif
 
 ### Debugging and local job execution
 
-This sample uses VSCode Remote - Containers to simplify the development environment set up. In the most of the cases it is as simple as clicking "Reopen in Container" in VSCode UI to get Spark and the corresponding development tools up and running. Check the corresponding [README](../.devcontainer/README.md) in the `.devcontainer` folder for more information.
+This sample uses [VSCode Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) to simplify the development environment set up. In the most of the cases it is as simple as clicking "Reopen in Container" in VSCode UI to get Spark and the corresponding development tools up and running. Check the corresponding [README](../.devcontainer/README.md) in the `.devcontainer` folder for more information.
 
 Once it's ready, the normal VSCode python debugging experience is available: open the job file to run or debug, set breakpoints, and run debug session in debug menu. All the familiar features like variable hovering, step in/over as well as external library debugging are available immediately.
 
@@ -111,9 +111,9 @@ Data development is usually more convenient when there is a way to get immediate
 
 ![Spark Jupyter Notebooks](../../images/python-dx-jupyter.jpg)
 
-To start, open the `data-generator.ipynb` file in the extension. It contains a simplified version of the `streaming_job.py`, but in the convenient notebook format. Internally it runs the same IKernel python kernel that is normally used with jupyter, but renders it inside the VSCode. This view provides a way to rerun the cells, make experiments and explore the data. Simultaneously, it supports some of the features of the plain text files, guaranteeing IntelliSense support, hovering as well as debugging: just click "run line by line" at the top of the cell to automatically attach to the corresponding IKernel process and initiate debugging.
+To start, open the [data-generator.ipynb](./data-generator.ipynb) file in the extension. It contains a data generation code for the sample, but in the convenient notebook format. Internally it runs the same IKernel python kernel that is normally used with jupyter, but renders it inside the VSCode. This view provides a way to rerun the cells, make experiments and explore the data. Simultaneously, it supports some of the features of the plain text files, guaranteeing IntelliSense support, hovering as well as debugging: just click "run line by line" at the top of the cell to automatically attach to the corresponding IKernel process and initiate debugging.
 
-The only consideration is that Databricks has a convenient `display` function that is not available locally. To simulate its behavior, use dataframe's `.show()` action to display the preview or utilize console output (`df.writeStream.format('console').start()`) to output stream.
+The only consideration is that Databricks has a convenient `display` function that is not available locally. To simulate its behavior, use dataframe's `.show()` action to display the preview or utilize console output (check `preview_stream` function in [streaming_preview.py](./spark_utils/streaming_utils/streaming_preview.py)) to output stream.
 
 ### Plain code experiments
 
@@ -121,7 +121,13 @@ While notebooks format is convenient for experimentation, notebooks cannot be ex
 
 ![Spark Plain IKernel](../../images/python-dx-plain-ikernel.jpg)
 
-As this format doesn't allow to pass run arguments (compared to debugging) `spark_defaults.conf` and `run_args` usage were purposefully designed to support the scenario of just-in-time check of the production-ready code during development.
+As this format doesn't allow to pass run arguments (compared to debugging), `spark_defaults.conf` and `run_args` usage were purposefully designed to support the scenario of just-in-time check of the production-ready code during development.
+
+### Spark UI
+
+During development or experimentation, sometimes it is handy to get access to the Spark UI to check logs, job expecution plans and time graphs. DevContainer is configured to track openned port, so that it notifies about every new opened port whether it's an ordinary development, Jupyter notebooks or in-code cell execution. So, just accept the invitation to open the browser on a port like 4040, 4041 etc to get directly into the Spark UI.
+
+![Spark UI](../../images/python-dx-spark-ui.jpg)
 
 ### Tests
 
