@@ -19,7 +19,7 @@ ENV APACHE_SPARK_VERSION="${spark_version}" \
 
 RUN apt-get -y update && \
     apt-get install --no-install-recommends -y \
-    "openjdk-${openjdk_version}-jre-headless" \
+    "openjdk-${openjdk_version}-jdk-headless" \
     "openssh-client" "git" "bash-completion" \
     "aspell" "aspell-en" \
     "flake8" \
@@ -56,10 +56,18 @@ ENV PATH=$SPARK_HOME/bin:$HADOOP_HOME/bin:$PATH \
     PYTHONPATH="${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-${py4j_version}-src.zip" \
     SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info"
 
+RUN \
+  apt-get update && apt-get install -y gnupg2 curl && \
+  echo "deb https://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list && \
+  curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add  && \
+  apt-get update && \
+  apt-get install -y sbt && \
+  apt-get clean && rm -rf /var/lib/apt/lists/*
+
 USER $NB_UID
 
 ENV PATH=$JAVA_HOME/bin:$SPARK_HOME/bin:$HADOOP_HOME/bin:$PATH
-RUN echo "export SPARK_DIST_CLASSPATH=$(hadoop classpath)" >> $HOME/.bashrc
+ENV SPARK_DIST_CLASSPATH=$HADOOP_HOME/etc/hadoop:$HADOOP_HOME/share/hadoop/common/lib/*:$HADOOP_HOME/share/hadoop/common/*:$HADOOP_HOME/share/hadoop/hdfs:$HADOOP_HOME/share/hadoop/hdfs/lib/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/mapreduce/*:$HADOOP_HOME/share/hadoop/yarn:$HADOOP_HOME/share/hadoop/yarn/lib/*:$HADOOP_HOME/share/hadoop/yarn/*
 
 WORKDIR $HOME
 

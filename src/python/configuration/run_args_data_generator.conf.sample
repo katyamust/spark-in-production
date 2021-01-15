@@ -1,0 +1,1 @@
+output-eh-connection-string=Endpoint=sb://myeventhub.servicebus.windows.net/;SharedAccessKeyName=Send;SharedAccessKey=<key>;EntityPath=input;
