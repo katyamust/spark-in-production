@@ -31,10 +31,6 @@ resource "databricks_job" "streaming_job" {
     whl = var.wheel_file
   } 
 
-  library {
-    jar = var.custom_cosmosdb_connector
-  } 
-
   spark_python_task {
     python_file = var.python_main_file
     parameters  = [
