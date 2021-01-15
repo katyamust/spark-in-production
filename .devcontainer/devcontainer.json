@@ -33,5 +33,7 @@
 	"overrideCommand": false,
 
 	"containerUser": "root",
+	"postCreateCommand": "sudo rm $SPARK_HOME/conf/spark-defaults.conf && sudo ln -s `(realpath .devcontainer/spark-defaults.conf)` $SPARK_HOME/conf/spark-defaults.conf",
+
 	"remoteUser": "jovyan"
 }
