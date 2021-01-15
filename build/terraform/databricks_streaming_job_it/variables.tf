@@ -22,10 +22,6 @@ variable "streaming_container_name" {
   type = string
 }
 
-variable "cosmos_coll" {
-  type = string
-}
-
 variable "resource_group_name" {
   type = string
 }
