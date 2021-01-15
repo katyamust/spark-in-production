@@ -107,7 +107,7 @@ If the whole debugging experience is not required, then the code can be run dire
 
 ### Experimentation and interactive development
 
-Data development is usually more convenient when there is a way to get immediate feedback on your assumptions about data structure, check filters and intermediate outputs. That's why Python/DataBricks Notebooks are so popular especially at the early stages of development. Thankfully, VSCode python extension provides a way to get the same level of interactivity while still keeping IntelliSense and debugging support.
+Data development is usually more convenient when there is a way to get immediate feedback on your assumptions about data structure, check filters and intermediate outputs. That's why Python/DataBricks Notebooks are so popular especially at the early stages of development. Thankfully, VSCode python extension provides a way to get the same level of Jupyter interactivity inside the IDE while still keeping IntelliSense and debugging support.
 
 ![Spark Jupyter Notebooks](../../images/python-dx-jupyter.jpg)
 
