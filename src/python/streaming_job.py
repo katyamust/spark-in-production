@@ -1,5 +1,6 @@
 """
 Data ingestion stream
+In this example we emulate energy consumption metering scenario.
 """
 
 # %%
@@ -13,13 +14,11 @@ from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType
 import pyspark.sql.functions as F
 
-from spark_utils.streaming_utils import EventHubParser
-from spark_utils.schemas import SchemaFactory
-from spark_utils.streaming_utils.denormalization import denormalize_parsed_data
+from spark_utils.streaming_utils import EventHubStreamer
 import spark_utils.batch_operations as batch_operations
 
 # %%
-p = configargparse.ArgParser(prog='streaming.py',
+p = configargparse.ArgParser(prog='streaming_job.py',
                              description='Streaming Job Sample',
                              default_config_files=['configuration/run_args_streaming.conf'],
                              formatter_class=configargparse.ArgumentDefaultsHelpFormatter)
@@ -39,9 +38,8 @@ p.add('--trigger-interval', type=str, required=False, default='1 second',
       help='Trigger interval to generate streaming batches (format: N seconds)')
 p.add('--streaming-checkpoint-path', type=str, required=False, default="checkpoints/streaming",
       help='Path to checkpoint folder for streaming')
-p.add('--telemetry-instrumentation-key', type=str, required=True,
-      help='Instrumentation key used for telemetry')
-
+#p.add('--telemetry-instrumentation-key', type=str, required=True,
+#      help='Instrumentation key used for telemetry')
 
 args, unknown_args = p.parse_known_args()
 
@@ -95,20 +93,14 @@ print("Input stream schema:")
 raw_data.printSchema()
 
 # %%
-message_schema: StructType = SchemaFactory.get_instance()
+eh_message_schema: StructType = EventHubStreamer.eventhub_schema()
 
+# %%
 # Event hub message parser function
-parsed_data = EventHubParser.parse(raw_data, message_schema)
+eh_data = EventHubStreamer.parse(raw_data, eh_message_schema)
 
 print("Parsed stream schema:")
-parsed_data.printSchema()
-
-# %% Denormalize messages: Flatten and explode messages by each contained time series point
-
-denormalized_data = denormalize_parsed_data(parsed_data)
-
-print("denormalized_data schema")
-denormalized_data.printSchema()
+eh_data.printSchema()
 
 # %% batch operations
 
@@ -121,33 +113,18 @@ print("Base storage url:", BASE_STORAGE_PATH)
 output_delta_lake_path = BASE_STORAGE_PATH + args.output_path
 checkpoint_path = BASE_STORAGE_PATH + args.streaming_checkpoint_path
 
-
-def __store_data_frame(batch_df: DataFrame, _: int):
-    try:
-        # Cache the batch in order to avoid the risk 
-        # of recalculation in each write operation
-        batch_df = batch_df.persist()
-
-        # Make valid time series points available to post processing
-        # (by storing in Delta lake)
-        batch_operations.store_data(batch_df, output_delta_lake_path)
-
-        # <other operations may go here>
-        batch_df = batch_df.unpersist()
-
-    except Exception as err:
-        raise err
-
-
 # checkpointLocation is used to support failure (or intentional shut-down)
 # recovery with a exactly-once semantic. See more on
 # https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#fault-tolerance-semantics.
-# The trigger determines how often a batch is created and processed.
-out_stream = denormalized_data \
+
+print("Writing stream to delta lake...")
+out_stream = eh_data \
     .writeStream \
     .option("checkpointLocation", checkpoint_path) \
-    .trigger(processingTime=args.trigger_interval) \
-    .foreachBatch(__store_data_frame)
+    .foreachBatch(batch_operations.store_data)
 
 execution = out_stream.start()
 execution.awaitTermination()
+
+
+# %%
