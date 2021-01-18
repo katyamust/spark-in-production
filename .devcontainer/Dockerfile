@@ -63,6 +63,9 @@ RUN \
   apt-get update && \
   apt-get install -y sbt && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
+  
+COPY spark-defaults.conf /spark-defaults.conf
+RUN sudo ln -s `(realpath /spark-defaults.conf)` $SPARK_HOME/conf/spark-defaults.conf
 
 USER $NB_UID
 
