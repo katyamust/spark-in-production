@@ -364,6 +364,9 @@ src/build/
 src/.pytest_cache
 src/geh_stream.egg-info/
 
+# spark checkpoints
+.checkpoint
+
 # Mac DS Store
 .DS_Store
 
