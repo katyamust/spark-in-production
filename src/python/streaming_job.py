@@ -14,6 +14,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType
 import pyspark.sql.functions as F
 
+from spark_utils.schemas import message_schema
 from spark_utils.streaming_utils import EventHubStreamer
 import spark_utils.batch_operations as batch_operations
 
@@ -93,11 +94,8 @@ print("Input stream schema:")
 raw_data.printSchema()
 
 # %%
-eh_message_schema: StructType = EventHubStreamer.eventhub_schema()
-
-# %%
 # Event hub message parser function
-eh_data = EventHubStreamer.parse(raw_data, eh_message_schema)
+eh_data = EventHubStreamer.parse(raw_data)
 
 print("Parsed stream schema:")
 eh_data.printSchema()
@@ -118,13 +116,12 @@ checkpoint_path = BASE_STORAGE_PATH + args.streaming_checkpoint_path
 # https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#fault-tolerance-semantics.
 
 print("Writing stream to delta lake...")
-out_stream = eh_data \
+out_stream = raw_data \
     .writeStream \
     .option("checkpointLocation", checkpoint_path) \
     .foreachBatch(batch_operations.store_data)
 
 execution = out_stream.start()
 execution.awaitTermination()
-
 
 # %%
