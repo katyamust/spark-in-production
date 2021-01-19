@@ -8,10 +8,12 @@ def store_data(batch_df: DataFrame, output_delta_lake_path):
     using Delta lake framework
     """
     batch_df.select(col("MeterId"),
-                    col("SupplierIdSupplierId"),
+                    col("SupplierId"),
                     col("Measurement"),
                     col("ObservationTime")) \
+            .repartition("SupplierId") \
             .write \
+            .partitionBy("SupplierId") \
             .format("delta") \
             .mode("append") \
             .save(output_delta_lake_path)
