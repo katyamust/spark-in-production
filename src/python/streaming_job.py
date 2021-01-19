@@ -13,7 +13,7 @@ from pyspark import SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql import DataFrame
 
-from spark_utils.streaming_utils import EventHubStreamer
+from spark_utils.streaming_utils import event_hub_parse, preview_stream
 import spark_utils.batch_operations as batch_operations
 
 # %% set up agruments
@@ -95,13 +95,13 @@ print("Input stream schema:")
 raw_data.printSchema()
 
 # %% parse event hub message 
-eh_data = EventHubStreamer.parse(raw_data)
+eh_data = event_hub_parse(raw_data)
 
 print("Parsed stream schema:")
 eh_data.printSchema()
 
 print("Stream preview:")
-EventHubStreamer.preview_stream(eh_data, await_seconds=5)
+preview_stream(eh_data, await_seconds=5)
 
 # %% store data to data lake 
 
@@ -148,7 +148,8 @@ out_stream = eh_data \
 
 
 execution = out_stream.start()
-execution.awaitTermination()
+execution.awaitTermination(30)
+execution.stop()
 
-print("Job compelte.")
+print("Job complete.")
 # %%
