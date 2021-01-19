@@ -1,13 +1,27 @@
 """
 Data ingestion stream
+In this example we emulate energy consumption metering scenario.
 """
 
-# %% parse args/secrets
+# %%
+import json
 import configargparse
 
-p = configargparse.ArgParser(prog='streaming.py',
+from pathlib import Path
+
+from pyspark import SparkConf
+from pyspark.sql import SparkSession
+from pyspark.sql import DataFrame
+
+from spark_utils.streaming_utils import event_hub_parse, preview_stream
+import spark_utils.batch_operations as batch_operations
+
+# %% set up agruments
+
+p = configargparse.ArgParser(prog='streaming_job.py',
                              description='Streaming Job Sample',
-                             default_config_files=['configuration/run_args_streaming.conf'],
+                             default_config_files=[Path(__file__).parent.joinpath(
+                                 'configuration/run_args_streaming.conf').resolve().as_posix()],
                              formatter_class=configargparse.ArgumentDefaultsHelpFormatter)
 p.add('--storage-account-name', type=str, required=True,
       help='Azure Storage account name (used for data output and checkpointing)')
@@ -25,8 +39,6 @@ p.add('--trigger-interval', type=str, required=False, default='1 second',
       help='Trigger interval to generate streaming batches (format: N seconds)')
 p.add('--streaming-checkpoint-path', type=str, required=False, default="checkpoints/streaming",
       help='Path to checkpoint folder for streaming')
-p.add('--telemetry-instrumentation-key', type=str, required=True,
-      help='Instrumentation key used for telemetry')
 
 
 args, unknown_args = p.parse_known_args()
@@ -36,8 +48,6 @@ if unknown_args:
     _ = [print(arg) for arg in unknown_args]
 
 # %% build spark context
-from pyspark import SparkConf
-from pyspark.sql import SparkSession
 
 spark_conf = SparkConf(loadDefaults=True) \
     .set('fs.azure.account.key.{0}.dfs.core.windows.net'.format(args.storage_account_name),
@@ -52,11 +62,10 @@ sc = spark.sparkContext
 print("Spark Configuration:")
 _ = [print(k + '=' + v) for k, v in sc.getConf().getAll()]
 
-# %% Configure Event Hub reading
-import json
+# %% configure event hub reading
 
 input_eh_starting_position = {
-    "offset": "-1",         # starting from beginning of stream
+    "offset": "-1",         # - 1 : starting from beginning of stream
     "seqNo": -1,            # not in use
     "enqueuedTime": None,   # not in use
     "isInclusive": True
@@ -65,7 +74,8 @@ input_eh_connection_string = args.input_eh_connection_string
 input_eh_conf = {
     # Version 2.3.15 and up requires encryption
     'eventhubs.connectionString': \
-    sc._jvm.org.apache.spark.eventhubs.EventHubsUtils.encrypt(input_eh_connection_string),
+    sc._jvm.org.apache.spark.eventhubs.EventHubsUtils.encrypt(
+        input_eh_connection_string),
     'eventhubs.startingPosition': json.dumps(input_eh_starting_position),
     'maxEventsPerTrigger': args.max_events_per_trigger,
 }
@@ -73,45 +83,27 @@ input_eh_conf = {
 print("Input event hub config:", input_eh_conf)
 
 # %% Read from Event Hub
+
 raw_data = spark \
     .readStream \
     .format("eventhubs") \
     .options(**input_eh_conf) \
-    .option("inferSchema", True) \
+    .option("inferSchema", True)\
     .load()
 
 print("Input stream schema:")
 raw_data.printSchema()
 
-# %%
-from pyspark.sql.types import StructType
-
-from spark_utils.streaming_utils import EventHubParser
-from spark_utils.schemas import SchemaFactory, SchemaNames
-
-message_schema: StructType = SchemaFactory.get_instance(SchemaNames.MessageBody)
-
-# Event hub message parser function
-parsed_data = EventHubParser.parse(raw_data, message_schema)
+# %% parse event hub message 
+eh_data = event_hub_parse(raw_data)
 
 print("Parsed stream schema:")
-parsed_data.printSchema()
+eh_data.printSchema()
 
-# %% Denormalize messages: Flatten and explode messages by each contained time series point
-from spark_utils.streaming_utils.denormalization import denormalize_parsed_data
+print("Stream preview:")
+preview_stream(eh_data, await_seconds=5)
 
-denormalized_data = denormalize_parsed_data(parsed_data)
-
-print("denormalized_data schema")
-denormalized_data.printSchema()
-
-# %%
-from pyspark.sql import DataFrame
-
-import pyspark.sql.functions as F
-
-import spark_utils.batch_operations as batch_operations
-
+# %% store data to data lake 
 
 BASE_STORAGE_PATH = "abfss://{0}@{1}.dfs.core.windows.net/".format(
     args.storage_container_name, args.storage_account_name
@@ -122,13 +114,21 @@ print("Base storage url:", BASE_STORAGE_PATH)
 output_delta_lake_path = BASE_STORAGE_PATH + args.output_path
 checkpoint_path = BASE_STORAGE_PATH + args.streaming_checkpoint_path
 
+# checkpointLocation is used to support failure (or intentional shut-down)
+# recovery with a exactly-once semantic. See more on
+# https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#fault-tolerance-semantics.
+
 
 def __store_data_frame(batch_df: DataFrame, _: int):
     try:
         # Cache the batch in order to avoid the risk of recalculation in each write operation
+        # Cache the batch in order to avoid the risk
+        # of recalculation in each write operation
         batch_df = batch_df.persist()
 
         # Make valid time series points available to aggregations (by storing in Delta lake)
+        # Make valid time series points available to post processing
+        # (by storing in Delta lake)
         batch_operations.store_data(batch_df, output_delta_lake_path)
 
         # <other operations may go here>
@@ -139,15 +139,17 @@ def __store_data_frame(batch_df: DataFrame, _: int):
         raise err
 
 
-# checkpointLocation is used to support failure (or intentional shut-down)
-# recovery with a exactly-once semantic. See more on
-# https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#fault-tolerance-semantics.
-# The trigger determines how often a batch is created and processed.
-out_stream = denormalized_data \
+print("Writing stream to delta lake...")
+out_stream = eh_data \
     .writeStream \
     .option("checkpointLocation", checkpoint_path) \
-    .trigger(processingTime=args.trigger_interval) \
+    .trigger(processingTime="1 second") \
     .foreachBatch(__store_data_frame)
 
+
 execution = out_stream.start()
-execution.awaitTermination()
+execution.awaitTermination(30)
+execution.stop()
+
+print("Job complete.")
+# %%
