@@ -12,8 +12,3 @@ output-path=delta/meter-data-8
 streaming-checkpoint-path=checkpoints/streaming-8
 
 max-events-per-trigger=100
-
-cosmos-db-endpoint=
-cosmos-db-masterkey=
-cosmos-db-database-name=
-cosmos-db-collection-name=
