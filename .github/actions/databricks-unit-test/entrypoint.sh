@@ -2,4 +2,5 @@
 
 cd ./src/python/src
 python setup.py install
-pytest tests
+cd ../../../tests/
+pytest unit-tests
