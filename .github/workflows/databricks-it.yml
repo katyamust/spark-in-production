@@ -110,6 +110,7 @@ jobs:
         echo "TF_VAR_keyvault_id=${{ steps.obtain-keyvault-id-name.outputs.keyvault-id }}" >> $GITHUB_ENV
         echo "TF_VAR_databricks_id=${{ steps.obtain-db-id-url.outputs.workspace-id }}" >> $GITHUB_ENV 
         echo "TF_VAR_python_main_file=${{ env.MAIN_PYTHON_FILE}}" >> $GITHUB_ENV 
+        echo "TF_VAR_wheel_file=${{ env.WHEEL_FILE}}" >> $GITHUB_ENV 
       
     - name: Databricks CLI Install And Connect
       uses: ./.github/actions/databricks-cli-install-connect
