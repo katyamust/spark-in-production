@@ -1,7 +1,7 @@
 name: Deploy Databricks Integration Testing Infrastructure
 
 on:
-  # push:
+  push:
   #   # branches: 
   #   #   - main
   #   paths:
@@ -49,6 +49,8 @@ jobs:
           
         - name: Read Pipeline Configuration
           uses: ./.github/actions/read-pipeline-configuration
+          with:
+            config-file: integration-tests.json
 
         - name: Set Environment Secrets
           run: |  
