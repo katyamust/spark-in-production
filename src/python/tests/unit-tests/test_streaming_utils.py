@@ -13,5 +13,5 @@
 # limitations under the License.
 import pytest
 
-def sample_unit_test():
+def test_sample_unit_test():
     assert 1==1
