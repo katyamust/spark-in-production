@@ -69,7 +69,7 @@ jobs:
 
     - name: Setup storage credentials
       run: |
-        booking_connection_string=$(az storage account show-connection-string --name "enrgstate${{ env.ENV_NAME }}" --resource-group ${{ env.RESOURCE_GROUP_NAME }} --output tsv)
+        booking_connection_string=$(az storage account show-connection-string --name "state${{ env.ENV_NAME }}" --resource-group ${{ env.RESOURCE_GROUP_NAME }} --output tsv)
         echo ::add-mask::$booking_connection_string
         echo "BOOKING_STORAGE_CONNECTION_STRING=$booking_connection_string" >> $GITHUB_ENV
         output_storage_key=$(az storage account keys list --resource-group ${{ env.RESOURCE_GROUP_NAME }} --account-name "timeseriesdata${{ env.ENV_NAME }}" --query '[0].value' -o tsv)
@@ -83,7 +83,7 @@ jobs:
       with:
         action: book
         azure-storage-connection-string: ${{ env.BOOKING_STORAGE_CONNECTION_STRING }}
-        group: 'INPUT,COSMOS,OUTPUT_CONTAINER'
+        group: 'INPUT,OUTPUT_CONTAINER'
         state-blob: resource-booking-state
         state-container: it-booking-state
 
@@ -101,11 +101,9 @@ jobs:
       run: |
         receiver_eh_input_secret_name="receiver-${{ env.RB_OUT_INPUT }}"
         streaming_container_name=${{ env.RB_OUT_OUTPUT_CONTAINER }}
-        cosmos_coll=${{ env.RB_OUT_COSMOS }}
 
         echo "TF_VAR_receiver_eh_input_secret_name=$receiver_eh_input_secret_name" >> $GITHUB_ENV
         echo "TF_VAR_streaming_container_name=$streaming_container_name" >> $GITHUB_ENV
-        echo "TF_VAR_cosmos_coll=$cosmos_coll" >> $GITHUB_ENV
         echo "TF_VAR_environment=${{ env.ENV_NAME }}" >> $GITHUB_ENV 
         echo "TF_VAR_resource_group_name=${{ env.RESOURCE_GROUP_NAME }}" >> $GITHUB_ENV
         echo "TF_VAR_environment=${{ env.ENV_NAME }}" >> $GITHUB_ENV
