@@ -1,10 +1,10 @@
-#from spark_utils.schemas import message_schema
-import spark_utils.batch_operations as batch_operations 
-
-from pyspark.sql.types import StructType, StructField, StringType, ArrayType, DecimalType, TimestampType, BooleanType
 import pytest
 from decimal import Decimal
 from datetime import datetime
+
+from spark_utils.schemas import message_schema
+import spark_utils.batch_operations as batch_operations
+
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
@@ -12,13 +12,12 @@ default_obs_time = datetime.strptime(
 
 
 @pytest.fixture(scope="module")
-def valid_message_sample(spark, valid_atomic_value_schema):
-    structureData = [
-        ("217", "23", [Decimal(12345), "kWH"], default_obs_time)]
+def with_supplier23_df(spark):
+    structureData = [("217", "23", [Decimal(12345), "kWH"], default_obs_time)]
     df = spark.createDataFrame(data=structureData, schema=message_schema)
     return df
 
 
-def test_extractValidMessageAtomicValues(valid_message_sample):
-    test_df = batch_operations.filter_by_supplier(valid_message_sample)
-    assert len(test_df.columns) == 1
+def test_filter_by_supplier(with_supplier23_df):
+    test_df = batch_operations.filter_by_supplier(with_supplier23_df, 23)
+    assert test_df.toPandas()["SupplierId"][0] == "23"
