@@ -10,7 +10,8 @@ from pathlib import Path
 
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, lit
+ 
+import spark_utils.batch_operations as batch_operations
 
 # %%
 p = configargparse.ArgParser(prog='streaming_job.py',
@@ -79,8 +80,7 @@ my_df.show()
 # %%
 
 print("Filtered for SupplierId 19")
-
-sp19_df = my_df.filter(col("SupplierId") == lit("19"))
+sp19_df = batch_operations.filter_by_supplier(my_df,19 )
 sp19_df.show()
 
 # %%
