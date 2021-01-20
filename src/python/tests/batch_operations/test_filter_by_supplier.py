@@ -1,5 +1,5 @@
-from spark_utils.schemas import message_schema
-from spark_utils.batch_operations import filter_by_supplier
+#from spark_utils.schemas import message_schema
+import spark_utils.batch_operations as batch_operations 
 
 from pyspark.sql.types import StructType, StructField, StringType, ArrayType, DecimalType, TimestampType, BooleanType
 import pytest
@@ -20,5 +20,5 @@ def valid_message_sample(spark, valid_atomic_value_schema):
 
 
 def test_extractValidMessageAtomicValues(valid_message_sample):
-    test_df = filter_by_supplier(valid_message_sample)
+    test_df = batch_operations.filter_by_supplier(valid_message_sample)
     assert len(test_df.columns) == 1
