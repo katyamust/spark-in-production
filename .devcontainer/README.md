@@ -1,14 +1,16 @@
 # DevContainer Configuration
 
-The Visual Studio Code Remote - Containers extension lets you use a Docker container as a full-featured development environment. It allows you to open any folder or repository inside a container and take advantage of Visual Studio Code's full feature set. A devcontainer.json file in your project tells VS Code how to access (or create) a development container with a well-defined tool and runtime stack. This container can be used to run an application or to sandbox tools, libraries, or runtimes needed for working with a codebase. GitHub Codespaces use this same concept to quickly create customized, cloud-based development environments accessible from VS Code or the web.
+[Visual Studio Code Remote - Containers extension](https://code.visualstudio.com/docs/remote/containers) lets you use a Docker container as a full-featured development environment. It allows you to open any folder or repository inside a container and take advantage of Visual Studio Code's full feature set. A devcontainer.json file in your project tells VS Code how to access (or create) a development container with a well-defined tool and runtime stack. This container can be used to run an application or to sandbox tools, libraries, or runtimes needed for working with a codebase. 
 
 As Apache Spark is not that easy to install and configure properly, DevContainers provides a simple to use alternative to setup Spark Standalone and the corresponding development tools in minutes.
 
-Check [documentation](https://code.visualstudio.com/docs/remote/create-dev-container) for a reference on available parameters and deployment options.
+Dev environment inside the container can be spun up not only in VSCode locally, but also using [GitHub Codespaces](https://github.com/features/codespaces), which allows you to create cloud-based development environments accessible from VS Code or the web. That is especially desirable in Spark scenarios as it allows to host a heavy spark worker process out of the development machine.
+
+Check the [documentation](https://code.visualstudio.com/docs/remote/create-dev-container) for a reference on available parameters and deployment options.
 
 ## Dockerfile
 
-Dockerfile is the main place to configure all required binary dependencies and installation scripts for a DevContainer.
+Dockerfile is the main place to configure all the required binary dependencies and installation scripts for a DevContainer.
 
 In the specific case of Spark development environment prebuilt containers from [Jupyter Stack](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-pyspark-notebook) project can be an optimal solutions: they contain the latest configured single-node spark engine as well as all required dev tools. Check [jupyter/pyspark-notebook](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-pyspark-notebook) for Spark with PySpark interface and [jupyter/all-spark-notebook](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-all-spark-notebook) for a Spark engine with additional Scala and R support.
 
@@ -16,7 +18,7 @@ To use a prebuilt version put `FROM jupyter/pyspark-notebook:<VERSION_TAG>` at t
 
 ### Custom Spark/Hadoop version
 
-Sometimes a specific Spark/Hadoop version configuration is needed to fit compatibility requirements. A modified Dockerfile based on [jupyter/pyspark-notebook](https://github.com/jupyter/docker-stacks/blob/master/pyspark-notebook/Dockerfile) was build that allows to select Spark and Hadoop versions to install and configure Use the corresponding ARGs either directly in the Dockerfile or use DevContainer `build.args` dictionary to overwrite versions and checksums.
+Sometimes a specific Spark/Hadoop version configuration is needed to fit compatibility requirements. A modified [Dockerfile](./Dockerfile) based on [jupyter/pyspark-notebook](https://github.com/jupyter/docker-stacks/blob/master/pyspark-notebook/Dockerfile) was build that allows to select Spark and Hadoop versions to install and configure. Use the corresponding ARGs either directly in the Dockerfile or in DevContainer `build.args` section to overwrite versions and checksums.
 
 For available options check [Spark on Apache Mirror](https://apache-mirror.rbc.ru/pub/apache/spark/) and [Spark on Apache Archive](https://archive.apache.org/dist/spark/) for available Spark versions and [Hadoop Common on Apache Mirror](https://apache-mirror.rbc.ru/pub/apache/hadoop/common/) and [Hadoop Common on Apache Archive](https://archive.apache.org/dist/hadoop/common/) for Hadoop binaries. Make sure `spark-<VERSION>-bin-without-hadoop.tgz` and `hadoop-<VERSION>.tar.gz` are available in the corresponding version folders.
 
@@ -72,7 +74,7 @@ A few container settings are additionally specified in the .devcontainer.json fi
 ```
 
 * `forwardPosts` automatically forwards 4 Spark UI ports as well as 8888 for jupyter notebooks.
-* `containerEnv`, `overrideCommand`, `containerUser` and `remoteUser` are required to setup password-less sudo on the jovyan user. "jovyan" is the main user of the container intentionally built without any out-of-the-box root permissions. A special script at the entrypoint of the container (`overWriteCommand` makes sure it runs) check "GRANT_SUDO" environment variable and configures password-less sudo on jovyan user. `containerUser` and `remoteUser` guarantee that the entrypoint script runs with root permissions while VSCode still connects to jovyan session.
+* `containerEnv`, `overrideCommand`, `containerUser` and `remoteUser` are required to setup password-less sudo on the jovyan user. "jovyan" is the main user of the container intentionally built without any out-of-the-box root permissions. A special script at the entrypoint of the container (`overWriteCommand` makes sure it runs) check "GRANT_SUDO" environment variable and configures password-less sudo on jovyan user. `containerUser` and `remoteUser` guarantee that the entrypoint script runs with root permissions while VSCode still connects to jovyan session. Check [.devcontainer.json reference](https://code.visualstudio.com/docs/remote/devcontainerjson-reference) for more details.
 
 ## Spark configuration
 
@@ -84,7 +86,7 @@ spark_conf = SparkConf(loadDefaults=True) \
          args.storage_account_key)
 ```
 
-While this option is perfect for passwords and other secrets, it's far from optimal for common configuration. To reproduce DataBricks and other spark cluster's libraries management behavior as well as default configuration values, Spark Default Configuration can be used. `spark-defaults.conf` file from `$SPARK_HOME/conf/` specifies the default configuration to be applied on every spark engine start. For convenience this file is located in the same .devcontainers folder and soft-linked to `$SPARK_HOME/conf` folder at container start. Make sure to restart Spark Session to apply updated values: normally restart of a debug or interactive session is enough.
+While this option is perfect for passwords and other secrets, it's far from optimal for common configuration. To reproduce DataBricks and other spark cluster's libraries management behavior as well as default configuration values, Spark Default Configuration can be used. [spark-defaults.conf](./spark-defaults.conf) file from `$SPARK_HOME/conf/` specifies the default configuration to be applied on every spark engine start. For convenience this file is located in the same .devcontainers folder and soft-linked to `$SPARK_HOME/conf` folder at container start. Make sure to restart Spark Session to apply updated values: normally restart of a debug or interactive session is enough.
 
 ```conf
 # Default system properties included when running spark-submit.
@@ -103,4 +105,4 @@ spark.sql.extensions io.delta.sql.DeltaSparkSessionExtension
 spark.sql.catalog.spark_catalog org.apache.spark.sql.delta.catalog.DeltaCatalog
 ```
 
-`spark.jars.packages` is of a special interest as it allows to specify Maven coordinated to resolve and download automatically on startup. Check [Spark Configuration](http://spark.apache.org/docs/latest/configuration.html) section for other possible configuration parameters.
+`spark.jars.packages` is of a special interest as it allows users to specify Maven coordinates to resolve and download automatically on startup. Check [Spark Configuration](http://spark.apache.org/docs/latest/configuration.html) section for other possible configuration parameters. For example, `io.delta:delta-core_2.12:0.7.0` is used here to enable Delta Lake functionality and storage sink for local development. Note, that `spark_defaults.conf` only accepts configuration lines starting with "spark.*", forcing users to add other values (like Azure Storage keys) in code through a `SparkConf` object (check the example above).
