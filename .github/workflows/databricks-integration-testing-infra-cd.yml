@@ -104,13 +104,6 @@ jobs:
             echo "TF_VAR_environment=${{ env.ENV_NAME }}" >> $GITHUB_ENV 
             echo "TF_VAR_resource_group_name=${{ env.RESOURCE_GROUP_NAME }}" >> $GITHUB_ENV
               
-        - name: Configure Terraform Backend
-          uses: ./.github/actions/configure-terraform-backend
-          with:
-            backend-file-path: "./build/terraform/databricks_integration_testing_infra/backend.tf"
-            resource-group-name: "${{ env.RESOURCE_GROUP_NAME }}"
-            storage-account-name: "state${{ env.ENV_NAME }}"
-
         - name: Upload booking state
           run: |
             storage_name="state${{ env.ENV_NAME }}"
@@ -120,6 +113,13 @@ jobs:
             --file "./build/resource-booking-state" \
             --account-key $account_key \
           if: steps.state-storage-exists.outputs.state-storage-exists == 'False'
+            
+        - name: Configure Terraform Backend
+          uses: ./.github/actions/configure-terraform-backend
+          with:
+            backend-file-path: "./build/terraform/databricks_integration_testing_infra/backend.tf"
+            resource-group-name: "${{ env.RESOURCE_GROUP_NAME }}"
+            storage-account-name: "state${{ env.ENV_NAME }}"
 
         - name: Terraform Init
           working-directory: ./build/terraform/databricks_integration_testing_infra
