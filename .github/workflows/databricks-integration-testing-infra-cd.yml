@@ -113,7 +113,7 @@ jobs:
             echo "TF_VAR_current_tenant_id=${{ env.ARM_TENANT_ID }}" >> $GITHUB_ENV 
             echo "TF_VAR_environment=${{ env.ENV_NAME }}" >> $GITHUB_ENV 
             echo "TF_VAR_resource_group_name=${{ env.RESOURCE_GROUP_NAME }}" >> $GITHUB_ENV
-            
+
         - name: Configure Terraform Backend
           uses: ./.github/actions/configure-terraform-backend
           with:

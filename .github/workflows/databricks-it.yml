@@ -100,7 +100,6 @@ jobs:
       run: |
         receiver_eh_input_secret_name="receiver-${{ env.RB_OUT_INPUT }}"
         streaming_container_name=${{ env.RB_OUT_OUTPUT_CONTAINER }}
-
         echo "TF_VAR_receiver_eh_input_secret_name=$receiver_eh_input_secret_name" >> $GITHUB_ENV
         echo "TF_VAR_streaming_container_name=$streaming_container_name" >> $GITHUB_ENV
         echo "TF_VAR_environment=${{ env.ENV_NAME }}" >> $GITHUB_ENV 
