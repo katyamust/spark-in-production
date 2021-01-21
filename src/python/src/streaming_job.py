@@ -20,7 +20,8 @@ import spark_utils.batch_operations as batch_operations
 
 p = configargparse.ArgParser(prog='streaming_job.py',
                              description='Streaming Job Sample',
-                             default_config_files=['configuration/run_args_streaming.conf'],
+                             default_config_files=[Path(__file__).parent.joinpath(
+                                 'configuration/run_args_streaming.conf').resolve().as_posix()],
                              formatter_class=configargparse.ArgumentDefaultsHelpFormatter)
 p.add('--storage-account-name', type=str, required=True,
       help='Azure Storage account name (used for data output and checkpointing)')
@@ -93,7 +94,7 @@ raw_data = spark \
 print("Input stream schema:")
 raw_data.printSchema()
 
-# %% parse event hub message
+# %% parse event hub message 
 eh_data = event_hub_parse(raw_data)
 
 print("Parsed stream schema:")
@@ -102,7 +103,7 @@ eh_data.printSchema()
 print("Stream preview:")
 preview_stream(eh_data, await_seconds=5)
 
-# %% store data to data lake
+# %% store data to data lake 
 
 BASE_STORAGE_PATH = "abfss://{0}@{1}.dfs.core.windows.net/".format(
     args.storage_container_name, args.storage_account_name
