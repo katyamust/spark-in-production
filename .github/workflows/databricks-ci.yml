@@ -1,7 +1,6 @@
 name: Databricks CI
 
 on:
-  # push:
   # pull_request:
   #   branches: 
   #     - main 

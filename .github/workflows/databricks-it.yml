@@ -1,7 +1,6 @@
 name: Databricks Integration Test
 
 on:
-  push:
   #  pull_request:
   #    branches: 
   #      - main 
