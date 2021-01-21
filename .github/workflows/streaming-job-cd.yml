@@ -1,6 +1,6 @@
 name: Streaming Job Deploy (Enrichment and Validation)
 on:
-  push:
+  # push:
   #   branches:
   #     - main
   #   paths:
@@ -15,6 +15,10 @@ on:
         default: ''
       env_name:
         description: 'Env name used to postfix resources names'
+        required: true
+        default: ''
+      organisation_name:
+        description: 'Organisation name to postfix resources names'
         required: true
         default: ''
       client_id:
