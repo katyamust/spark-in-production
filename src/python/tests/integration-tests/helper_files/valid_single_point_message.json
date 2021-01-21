@@ -1,0 +1,9 @@
+{
+ "MeterId": "217",
+ "SupplierId": "23",
+ "Measurement": {
+ "Value" : 12345,
+ "Unit" : "kWH"
+ },
+ "ObservationTime": "2021-19-01T10:33:00Z"
+}
