@@ -18,7 +18,9 @@
 		"littlefoxteam.vscode-python-test-adapter",
 		"hbenl.vscode-test-explorer",
 		"kevinglasson.cornflakes-linter",
-		"scalameta.metals"
+		"scalameta.metals",
+		"github.vscode-pull-request-github",
+		"github.codespaces"
 	],
 
 	"containerEnv": {
