@@ -37,3 +37,16 @@ def test_filter_by_supplier_drops_other_suppliers(message_factory):
     res = filter_by_supplier(df, "Sup2")
 
     assert res.count() == 0
+
+@pytest.mark.parametrize("supplierId, expected",
+    [
+        pytest.param('-1', '-1', id="Keeps supplier -1"),
+        pytest.param('0', '0', id="Keeps supplier -1")
+    ]
+)
+def test_filter_by_supplier_keeps_supplierid(message_factory, supplierId, expected):
+    df = message_factory(supplierId=supplierId)
+
+    test_df = filter_by_supplier(df, supplierId)
+
+    assert test_df.toPandas()["SupplierId"][0] == supplierId
