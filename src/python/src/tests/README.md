@@ -1,6 +1,7 @@
-## Unit Testing
+# Unit Testing
 
-Unit tests utilize a full-featured Spark context available though the [DevContainer](/.devcontainer/README.md) to simulate test workloads and assert the results. Pyhton unit-testing framework [`pytest`](https://docs.pytest.org/en/latest/) is used on top as the main archestration engine.
+Unit tests utilize a full-featured Spark context available though the [DevContainer](/.devcontainer/README.md) to simulate test workloads and validate the results.
+The Python unit-testing framework [`pytest`](https://docs.pytest.org/en/latest/) is used on top as the main orchestration engine.
 
 ## Testing and Fixtures
 
@@ -21,7 +22,7 @@ def spark():
 
 ```
 
-In order to share fixtures across tests and even test files (such as the Spark session, schemas, etc.), [`conftest.py` file](https://stackoverflow.com/questions/34466027/in-pytest-what-is-the-use-of-conftest-py-files#:~:text=External%20plugin%20loading%3A%20conftest.py%20is%20used%20to%20import,modules%20which%20might%20be%20needed%20in%20your%20tests.) can be used at the root of the testing directory.
+In order to share fixtures across tests and even test files (such as the Spark session, schemas, etc.), [`conftest.py` file](https://stackoverflow.com/questions/34466027/in-pytest-what-is-the-use-of-conftest-py-files#) can be used at the root of the testing directory.
 Any fixtures defined in the root `conftest.py` files could also be overwritten in the test files themselves as well as in other closer `conftest.py` files throughout the nested test folder structure.
 
 ### Data Factories
@@ -71,8 +72,8 @@ def test_function_a(field1, field2, expected, mock_data_factory):
 
 ### `pandas`
 
-While native PySpark can be used to both create and make assertions on DataFrames, `pandas` can give a better alternative as it was often provides easier and more developer friendly interface.
-Switching back and forth between `pandas` and PySpark DataFrames are also quite simple.
+While native PySpark can be used to both create and make assertions on DataFrames, `pandas` can give a better alternative as it often provides an easier and more developer-friendly interface.
+Switching back and forth between `pandas` and PySpark DataFrames is also quite simple.
 
 ## Putting it all together
 
@@ -87,7 +88,7 @@ As discussed above, `pandas` also helps in simplifying the process of asserting 
 
 ## Using This Sample
 
-This code sample shows how to use pytest to create factory fixtures used to test modularized spark functions.
+This code sample shows how to use `pytest` to create factory fixtures used to test modularized spark functions.
 To run this code sample, you can open this folder in the [dev container](../../../../README.md), and then run `pytest` from the root level of the folder from the command line.
-Test Explorer extensions, preinstalled the container, also allows run and debug tests inline as well.
+Test Explorer extensions, preinstalled in the container, also allow you to run and debug tests inline as well.
 The SparkSession and some other useful test fixtures (message factory and message schema) are defined in the testing root level `conftest.py`.
