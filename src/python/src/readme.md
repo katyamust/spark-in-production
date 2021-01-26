@@ -2,11 +2,26 @@
 
 `streaming_job.py` corresponds to the streaming code to be deployed to the Spark cluster. In a nutshell, it reads data from Azure Event Hubs, parses it, flattens nested structures and writes results to Azure Storage. Compared to Jupyter or Databricks Notebooks plain python files utilize the full IDE support and functionality during development, interactive experimentation and tests.
 
-This sample is optimized for a local spark deployment inside the configured DevContainer. Together with the local spark, Visual Studio Code python extension provides exceptional development experience for production python plain files development as well as data experimentation. Note that this setup is actually not recommended for any big data processing (use sampled data during development), performance tests or tuning. For more information check [DevContainer configuration](../../.devcontainer/).
+This sample is optimized for a local spark deployment inside the configured DevContainer. Together with the local spark, the Visual Studio Code python extension provides exceptional development experience for production python plain files development as well as data experimentation. Note that this setup is actually not recommended for any big data processing (use sampled data during development), performance tests or tuning. For more information check the [DevContainer configuration](../../.devcontainer/).
+
+Table of content:
+
+- [Python Development Experience and Conventions](#python-development-experience-and-conventions)
+  - [Streaming job code and spark_utils package](#streaming-job-code-and-spark_utils-package)
+    - [Configuration and secret management](#configuration-and-secret-management)
+    - [Spark context and configuration](#spark-context-and-configuration)
+    - [Execution loop](#execution-loop)
+  - [Development Experience](#development-experience)
+    - [IntelliSense, Refactoring and other development tools](#intellisense-refactoring-and-other-development-tools)
+    - [Debugging and local job execution](#debugging-and-local-job-execution)
+    - [Experimentation and interactive development](#experimentation-and-interactive-development)
+    - [Plain code experiments](#plain-code-experiments)
+    - [Spark UI](#spark-ui)
+    - [Tests](#tests)
 
 ## Streaming job code and spark_utils package
 
-Main streaming job flow resides in [streaming_job.py](./streaming_job.py) file. If needed, other job files like batch processing can be also added to the same folder. As most of the actual spark code is extracted in [spark_utils](./spark_utils/) package, this design encourages modularization, reuse and unit testing. From local development perspective this package is perceived by tools as a normal module with refactoring and instant IntelliSense functionality provided out of the box. Simultaneously, the deployment process can build this code as a single unit, deploy it to the cluster and then reuse it for every job in the folder.
+The main streaming job flow resides in [streaming_job.py](./streaming_job.py) file. If needed, other job files like batch processing can be also added to the same folder. As most of the actual spark code is extracted in [spark_utils](./spark_utils/) package, this design encourages modularization, reuse and unit testing. From local development perspective this package is perceived by tools as a normal module with refactoring and instant IntelliSense functionality provided out of the box. Simultaneously, the deployment process can build this code as a single unit, deploy it to the cluster and then reuse it for every job in the folder.
 
 For both use cases as a local module or a package its functionality can be imported with a standard python `from spark_utils import *`. Make sure to configure `__all__` variable in the module's `__init__.py` [correctly](https://docs.python.org/3/tutorial/modules.html#packages).
 
@@ -49,7 +64,7 @@ During the local development and experimentation, the corresponding configuratio
 
 ### Spark context and configuration
 
-Compared to Databricks jobs, SparkSession and the corresponding `spark` variable should be created manually before the first use. The code below shows how to do that. Note, that this code doesn't break Databricks run pattern and can be safely used there without any changes.
+Compared to Databricks jobs, SparkSession and the corresponding `spark` variable should be created manually before the first use. The code below shows how to do that. Note, that this code doesn't break the Databricks run pattern and can be safely used there without any changes.
 
 ```python
    spark_conf = SparkConf(loadDefaults=True) \
@@ -76,7 +91,7 @@ What makes Databricks a perfect technology for production is its high optimizati
 
 ### Execution loop
 
-Another difference between Databricks Notebooks and python file jobs lies in the execution loop handling in streaming jobs. For Databricks, `start()` call at the end of the loop is usually enough to request a streaming job to run until the completion or a failure. Python script on the other hand will exit immediately as the `start` call returns without blocking the thread. A special Spark function `awaitTermination` can be used to replicate the behavior:
+Another difference between Databricks Notebooks and python file jobs lies in the execution loop handling in streaming jobs. For Databricks, the `start()` call at the end of the loop is usually enough to request a streaming job to run until the completion or a failure. The python script on the other hand will exit immediately as the `start` call returns without blocking the thread. A special Spark function `awaitTermination` can be used to replicate the behavior:
 
 ```python
     execution = out_stream.start()
@@ -101,7 +116,7 @@ Once it's ready, the normal VSCode python debugging experience is available: ope
 
 ![Spark Debugging](../../../images/python-dx-debugging.jpg)
 
-As the Spark engine is installed and configured in the container, debug session actually instantiates a worker process to run and debug the code allowing developers to access to the actual execution behavior. So that, make sure that the corresponding configuration with real values has been provided as well as all required maven packages have been listed in the `spark-defaults.conf` file.
+As the Spark engine is installed and configured in the container, debug session actually instantiates a worker process to run and debug the code allowing developers to access to the actual execution behavior. Make sure that the corresponding configuration with real values has been provided as well as all required maven packages have been listed in the `spark-defaults.conf` file.
 
 If the whole debugging experience is not required, then the code can be run directly with `python streaming_job.py`.
 
@@ -125,7 +140,7 @@ As this format doesn't allow to pass run arguments (compared to debugging), `spa
 
 ### Spark UI
 
-During development or experimentation, sometimes it is handy to get access to the Spark UI to check logs, job expecution plans and time graphs. DevContainer is configured to track openned port, so that it notifies about every new opened port whether it's an ordinary development, Jupyter notebooks or in-code cell execution. So, just accept the invitation to open the browser on a port like 4040, 4041 etc to get directly into the Spark UI.
+During development or experimentation, sometimes it is handy to get access to the Spark UI to check logs, job expecution plans and time graphs. DevContainer is configured to track openned port, so that it notifies about every new opened port whether it's an ordinary development, Jupyter notebooks or in-code cell execution. So, just accept VSCode's invitation to open the browser on a port like 4040, 4041 etc to get directly into the Spark UI.
 
 ![Spark UI](../../../images/python-dx-spark-ui.jpg)
 
