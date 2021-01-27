@@ -22,10 +22,6 @@ variable "input_eventhub_listen_connection_string" {
   type = string
 }
 
-variable "appinsights_instrumentation_key" {
-  type = string
-}
-
 variable "wheel_file" {
   type = string
 }

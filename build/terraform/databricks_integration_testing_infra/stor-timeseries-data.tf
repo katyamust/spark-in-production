@@ -29,12 +29,3 @@ module "streaming_container" {
   container_access_type = "private"
   dependencies = [ module.stor_timeseries_data.dependent_on ]
 }
-
-module "aggregation_container" {
-  count                 = var.env_count
-  source                = "../modules/storage-container"
-  container_name        = "${var.aggregation_container_name}${count.index}"
-  storage_account_name  = module.stor_timeseries_data.name
-  container_access_type = "private"
-  dependencies = [ module.stor_timeseries_data.dependent_on ]
-}
