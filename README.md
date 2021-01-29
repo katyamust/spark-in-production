@@ -8,10 +8,8 @@ For more details and configuration options, check the corresponding folders:
 
 * [Python development experience](./src/python/src)
 * [Local environment: DevContainer](./.devcontainer)
-* Unit Testing for [python](./src/python/tests/unit-tests) and [scala](./src/scala/src/test/scala)
-* [CI/CD](./.github/workflows) and [Terraform configuration](./build/terraform)
-* [Integration tests](./src/python/tests/integration-tests)
-
+* Unit Testing for [python](./src/python/src/tests) and [scala](./src/scala/src/test/scala)
+* [CI/CD and Integration Tests](./.github/workflows)
 
 ## Getting started
 
@@ -55,3 +53,7 @@ Check the interactive section of the [README](./src/python/src/README.md#experim
 ### Run the streaming job
 
 Once the generator has started, switch to [streaming_job.py](./src/python/src/streamin_job.py) to start the streaming process locally. You can either start it through the local debugging session or the interactive environment by executing in-code cells individually. Check the [README](./src/python/src/README.md) for more information on dev experience.
+
+### Unit tests
+
+To run python unit tests, go to the [python src](./src/python/srs/) and execute `pytest tests`. The tests themself utilize the DevContainer to access the running Spark engine during the execution and manage to keep performance through the extensive use of fixtures. Check the corresponding [README](./src/python/src/tests/README.md) for more details.
