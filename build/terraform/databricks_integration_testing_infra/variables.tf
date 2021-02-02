@@ -7,11 +7,6 @@ variable "streaming_container_name" {
   default = "messagedata"
 }
 
-variable "aggregation_container_name"{
-  type = string
-  default = "aggregations"
-}
-
 variable "environment" {
   type          = string
   description   = "Enviroment"

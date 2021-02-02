@@ -1,8 +1,12 @@
-variable "module_name" {
+variable "databricks_id" {
   type = string
 }
 
-variable "databricks_id" {
+variable "environment" {
+  type = string
+}
+
+variable "resource_group_name" {
   type = string
 }
 
@@ -10,15 +14,12 @@ variable "storage_account_name" {
   type = string
 }
 
-variable "storage_account_key" {
-  type = string
-}
-
 variable "streaming_container_name" {
   type = string
+  default = "messagedata"
 }
 
-variable "input_eventhub_listen_connection_string" {
+variable "python_main_file" {
   type = string
 }
 
@@ -26,6 +27,6 @@ variable "wheel_file" {
   type = string
 }
 
-variable "python_main_file" {
+variable "keyvault_id" {
   type = string
 }

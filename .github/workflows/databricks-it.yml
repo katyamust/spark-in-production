@@ -14,6 +14,10 @@ on:
         description: 'Env name used to postfix resources names'
         required: true
         default: ''
+      organisation_name:
+        description: 'Organisation name to postfix resources names'
+        required: true
+        default: ''
       client_id:
         description: 'Service Principal Client (Application) Id'
         required: true
@@ -100,7 +104,6 @@ jobs:
       run: |
         receiver_eh_input_secret_name="receiver-${{ env.RB_OUT_INPUT }}"
         streaming_container_name=${{ env.RB_OUT_OUTPUT_CONTAINER }}
-
         echo "TF_VAR_receiver_eh_input_secret_name=$receiver_eh_input_secret_name" >> $GITHUB_ENV
         echo "TF_VAR_streaming_container_name=$streaming_container_name" >> $GITHUB_ENV
         echo "TF_VAR_environment=${{ env.ENV_NAME }}" >> $GITHUB_ENV 
