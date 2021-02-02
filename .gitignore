@@ -359,10 +359,10 @@ appsettings.*.json
 run_args*.conf
 
 # python package binaries
-src/dist/
-src/build/
-src/.pytest_cache
-src/geh_stream.egg-info/
+src/python/src/dist/
+src/python/src/build/
+src/python/src/.pytest_cache
+src/python/src/spark_utils.egg-info/
 
 # spark checkpoints
 .checkpoint

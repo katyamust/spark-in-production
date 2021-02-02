@@ -80,7 +80,7 @@ my_df.show()
 # %%
 
 print("Filtered for SupplierId 19")
-sp19_df = batch_operations.filter_by_supplier(my_df,19 )
+sp19_df = batch_operations.filter_by_supplier(my_df, "19")
 sp19_df.show()
 
 # %%

@@ -1,12 +1,21 @@
 # DevContainer Configuration
 
-[Visual Studio Code Remote - Containers extension](https://code.visualstudio.com/docs/remote/containers) lets you use a Docker container as a full-featured development environment. It allows you to open any folder or repository inside a container and take advantage of Visual Studio Code's full feature set. A devcontainer.json file in your project tells VS Code how to access (or create) a development container with a well-defined tool and runtime stack. This container can be used to run an application or to sandbox tools, libraries, or runtimes needed for working with a codebase. 
+The [Visual Studio Code Remote - Containers extension](https://code.visualstudio.com/docs/remote/containers) lets you use a Docker container as a full-featured development environment. It allows you to open any folder or repository inside a container and take advantage of Visual Studio Code's full feature set. A devcontainer.json file in your project tells VS Code how to access (or create) a development container with a well-defined tool and runtime stack. This container can be used to run an application or to sandbox tools, libraries, or runtimes needed for working with a codebase. 
 
 As Apache Spark is not that easy to install and configure properly, DevContainers provides a simple to use alternative to setup Spark Standalone and the corresponding development tools in minutes.
 
-Dev environment inside the container can be spun up not only in VSCode locally, but also using [GitHub Codespaces](https://github.com/features/codespaces), which allows you to create cloud-based development environments accessible from VS Code or the web. That is especially desirable in Spark scenarios as it allows to host a heavy spark worker process out of the development machine.
+The dev environment inside the container can be spun up not only in VSCode locally, but also using [GitHub Codespaces](https://github.com/features/codespaces), which allows you to create cloud-based development environments accessible from VSCode or the web. That is especially desirable in Spark scenarios as it allows for hosting a heavy spark worker process out of the development machine.
 
 Check the [documentation](https://code.visualstudio.com/docs/remote/create-dev-container) for a reference on available parameters and deployment options.
+
+Table of content:
+
+- [DevContainer Configuration](#devcontainer-configuration)
+  - [Dockerfile](#dockerfile)
+    - [Custom Spark/Hadoop version](#custom-sparkhadoop-version)
+    - [Change python version and install additional packages](#change-python-version-and-install-additional-packages)
+    - [Additional container configuration for Jupyter Stacks](#additional-container-configuration-for-jupyter-stacks)
+  - [Spark configuration](#spark-configuration)
 
 ## Dockerfile
 
@@ -18,7 +27,7 @@ To use a prebuilt version put `FROM jupyter/pyspark-notebook:<VERSION_TAG>` at t
 
 ### Custom Spark/Hadoop version
 
-Sometimes a specific Spark/Hadoop version configuration is needed to fit compatibility requirements. A modified [Dockerfile](./Dockerfile) based on [jupyter/pyspark-notebook](https://github.com/jupyter/docker-stacks/blob/master/pyspark-notebook/Dockerfile) was build that allows to select Spark and Hadoop versions to install and configure. Use the corresponding ARGs either directly in the Dockerfile or in DevContainer `build.args` section to overwrite versions and checksums.
+Sometimes a specific Spark/Hadoop version configuration is needed to fit compatibility requirements. A modified [Dockerfile](./Dockerfile) based on [jupyter/pyspark-notebook](https://github.com/jupyter/docker-stacks/blob/master/pyspark-notebook/Dockerfile) was built that allows selection of which Spark and Hadoop versions to install and configure. Use the corresponding ARGs either directly in the Dockerfile or in the DevContainer `build.args` section to overwrite versions and checksums.
 
 For available options check [Spark on Apache Mirror](https://apache-mirror.rbc.ru/pub/apache/spark/) and [Spark on Apache Archive](https://archive.apache.org/dist/spark/) for available Spark versions and [Hadoop Common on Apache Mirror](https://apache-mirror.rbc.ru/pub/apache/hadoop/common/) and [Hadoop Common on Apache Archive](https://archive.apache.org/dist/hadoop/common/) for Hadoop binaries. Make sure `spark-<VERSION>-bin-without-hadoop.tgz` and `hadoop-<VERSION>.tar.gz` are available in the corresponding version folders.
 
