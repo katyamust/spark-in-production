@@ -4,11 +4,7 @@ storage-container-name=data
 
 input-eh-connection-string=Endpoint=sb://myeventhub.servicebus.windows.net/;SharedAccessKeyName=Listen;SharedAccessKey=<key>;EntityPath=input;
 
-telemetry-instrumentation-key=<application insights instrumentation key, GUID format>
-
-master-data-path=master-data/master-data.csv
-
-output-path=delta/meter-data-8
-streaming-checkpoint-path=checkpoints/streaming-8
+output-path=delta/meter-data
+streaming-checkpoint-path=checkpoints/streaming
 
 max-events-per-trigger=100
