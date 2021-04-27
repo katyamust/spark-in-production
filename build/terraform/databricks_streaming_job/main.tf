@@ -1,7 +1,8 @@
-data "azurerm_key_vault_secret" "appinsights_instrumentation_key" {
-  name         = "appinsights-instrumentation-key"
+data "azurerm_key_vault_secret" "storage_account_key" {
+  name         = "timeseries-storage-account-key"
   key_vault_id = var.keyvault_id
 }
+
 data "azurerm_key_vault_secret" "evhar_inboundqueue_receiver_connection_string" {
   name         = "evhar-inboundqueue-receiver-connection-string"
   key_vault_id = var.keyvault_id
