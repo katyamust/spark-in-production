@@ -1,6 +1,6 @@
 module "evhnm_timeseries_inbound_queue" {
   source                    = "../modules/event-hub-namespace"
-  name                      = "evhnm-timeseries-inbound-queue-${var.organisation}-${var.environment}"
+  name                      = "evhnm-timeseries-inbound-queue-${var.environment}"
   resource_group_name       = data.azurerm_resource_group.greenenergyhub.name
   location                  = data.azurerm_resource_group.greenenergyhub.location
   sku                       = "Standard"
