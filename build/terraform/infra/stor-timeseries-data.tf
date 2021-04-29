@@ -1,6 +1,6 @@
 module "stor_timeseries_data" {
   source                    = "../modules/storage-account"
-  name                      = "timeseriesdata${lower(var.organisation)}${lower(var.environment)}"
+  name                      = "timeseriesdata${lower(var.environment)}"
   resource_group_name       = data.azurerm_resource_group.greenenergyhub.name
   location                  = data.azurerm_resource_group.greenenergyhub.location
   account_replication_type  = "LRS"
